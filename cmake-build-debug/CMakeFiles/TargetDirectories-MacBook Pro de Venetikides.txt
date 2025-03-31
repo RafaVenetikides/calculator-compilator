@@ -1,0 +1,3 @@
+/Users/rafaelvenetikides/Library/CloudStorage/OneDrive-GrupoMarista/Compiladores/Calculator/cmake-build-debug/CMakeFiles/Calculator.dir
+/Users/rafaelvenetikides/Library/CloudStorage/OneDrive-GrupoMarista/Compiladores/Calculator/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/rafaelvenetikides/Library/CloudStorage/OneDrive-GrupoMarista/Compiladores/Calculator/cmake-build-debug/CMakeFiles/rebuild_cache.dir
