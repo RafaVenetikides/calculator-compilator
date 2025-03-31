@@ -1,3 +1,0 @@
-D:/OneDrive - Grupo Marista/Compiladores/Calculator/cmake-build-debug/CMakeFiles/Calculator.dir
-D:/OneDrive - Grupo Marista/Compiladores/Calculator/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/OneDrive - Grupo Marista/Compiladores/Calculator/cmake-build-debug/CMakeFiles/rebuild_cache.dir
