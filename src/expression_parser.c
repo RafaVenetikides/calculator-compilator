@@ -18,7 +18,7 @@ void process_line(const char *line, FILE *outAsm) {
     char* out = parse_expression(line, &pos, postfix);
     generateAssemblyFromPostfix(out, outAsm);
 
-    printf("Assembly generated", out);
+    printf("Assembly generated\n", out);
 }
 
 char* parse_expression(const char *line, int *pos, char *out) {

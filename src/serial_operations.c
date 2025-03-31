@@ -25,8 +25,7 @@ void serial_functions(FILE *outAsm) {
 
 void serial_out(FILE *outAsm) {
 
-    fprintf(outAsm, "   POP R23\n"
-                    "   POP R22\n\n");
+    fprintf(outAsm, "print:\n");
 
 
     fprintf(outAsm,"    ; === Envia resultado (R23:R22) em HEX ===\n"
@@ -40,7 +39,7 @@ void serial_out(FILE *outAsm) {
                     "    LDI R16, 0x0A\n"
                     "    RCALL send_byte\n"
                     "\n"
-                    "    RJMP end\n\n");
+                    "    RET\n\n");
 
     fprintf(outAsm, "; === Função: envia o byte em R16 via serial ===\n"
                     "send_byte:\n"
@@ -112,7 +111,5 @@ void serial_out(FILE *outAsm) {
                     "    POP R17\n"
                     "    POP R16\n"
                     "    RET\n"
-                    "\n"
-                    "end:\n"
-                    "    RJMP end");
+                    "\n");
 }

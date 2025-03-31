@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include "include/file_utils.h"
 #include "include/expression_parser.h"
+#include "include/operations.h"
+#include "include/serial_operations.h"
 
 int main() {
     FILE *fptr = fopen("file_2.txt", "r");
@@ -28,11 +30,21 @@ int main() {
     read_lines(&lines, &count, fptr);
     fclose(fptr);
 
+    fprintf(outAsm, "#include \"m328Pdef.inc\"\n\n");
+
+    write_functions(outAsm);
+
+    serial_functions(outAsm);
+
     for (size_t i = 0; i < count; i++) {
         process_line(lines[i], outAsm);
         free(lines[i]);
     }
     free(lines);
+
+
+    fprintf(outAsm, "end:\n"
+    "    RJMP end\n");
 
     return 0;
 }

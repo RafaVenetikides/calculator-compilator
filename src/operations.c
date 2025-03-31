@@ -22,12 +22,6 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
 
     const char *p = postfix;
 
-    fprintf(outAsm, "#include \"m328Pdef.inc\"\n\n");
-
-    write_functions(outAsm);
-
-    serial_functions(outAsm);
-
     while (*p) {
         while (isspace((unsigned char)*p)) {
             p++;
@@ -108,14 +102,16 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
             gen_push_16bit(valFloat, outAsm);
         }
     }
-
-    serial_out(outAsm);
+    fprintf(outAsm, "   POP R23\n"
+                    "   POP R22\n\n");
+    fprintf(outAsm, "   CALL print\n\n");
 }
 
 void write_functions(FILE *outAsm) {
     fprintf(outAsm, "RJMP program_start\n\n");
     op_add_16bits(outAsm);
     op_sub_16bits(outAsm);
+    serial_out(outAsm);
 }
 
 /**
