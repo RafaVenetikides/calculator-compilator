@@ -13,7 +13,7 @@ void op_add_16bits(FILE *outAsm);
 void align_exp(FILE *outAsm);
 void op_sub_16bits(FILE *outAsm);
 void op_mult_16bits(FILE *outAsm);
-void op_real_divide(FILE *outAsm);
+void op_div_16bits(FILE *outAsm);
 void op_integer_divide(FILE *outAsm);
 void op_modulo(FILE *outAsm);
 void op_power(FILE *outAsm);

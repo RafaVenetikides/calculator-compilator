@@ -76,7 +76,18 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                                    "   PUSH R23\n\n");
                 break;
                 case '/':
-                    op_real_divide(outAsm);
+                    gen_pop_16bit(outAsm);
+
+                    fprintf(outAsm, ";  Moving values from op 1\n"
+                                    "    MOV R18, R16         ; copy low byte op1\n"
+                                    "    MOV R19, R17         ; copy high byte op1\n\n");
+
+                    gen_pop_16bit(outAsm);
+
+                    fprintf(outAsm, "   CALL op_div_16bits\n\n");
+
+                    fprintf(outAsm,"   PUSH R22\n"
+                                   "   PUSH R23\n\n");
                 break;
                 case '|':
                     op_integer_divide(outAsm);
@@ -123,6 +134,7 @@ void write_functions(FILE *outAsm) {
     op_add_16bits(outAsm);
     op_sub_16bits(outAsm);
     op_mult_16bits(outAsm);
+    op_div_16bits(outAsm);
     serial_out(outAsm);
 }
 
@@ -371,7 +383,7 @@ void op_mult_16bits(FILE *outAsm) {
                     "   OR R23, R30\n"
                     "   RET\n\n"
 
-                    "check_op2_zero:"
+                    "check_op2_zero:\n"
                     "   MOV R21, R17\n"
                     "   ANDI R21, 0x7C\n"
                     "   TST R21\n"
@@ -519,8 +531,179 @@ void op_mult_16bits(FILE *outAsm) {
                     "   RET\n\n");
 }
 
-void op_real_divide(FILE *outAsm) {
+void op_div_16bits(FILE *outAsm) {
+    fprintf(outAsm, "op_div_16bits:\n"
+                    "   MOV R30, R19\n"
+                    "    ANDI R30, 0x80         ; Sinal A\n"
+                    "    MOV R31, R17\n"
+                    "    ANDI R31, 0x80         ; Sinal B\n"
+                    "    EOR R30, R31           ; Sinal do resultado em R30\n\n");
 
+    fprintf(outAsm, "; Verificar se A é NaN ou infinito\n"
+                    "    MOV R20, R19\n"
+                    "    ANDI R20, 0x7C         ; isola bits de expoente\n"
+                    "    CPI R20, 0x7C\n"
+                    "    BRNE check_b_nan_inf\n"
+                    "    ; Expoente A é 0x1F (infinito ou NaN)\n\n"
+                    "    ; Verificar se mantissa de A != 0 → NaN\n"
+                    "    MOV R21, R19\n"
+                    "    ANDI R21, 0x03\n"
+                    "    OR R21, R18\n"
+                    "    BRNE result_nan\n"
+                    "    ; A é infinito\n"
+                    "    ; Verificar se B também é infinito\n"
+                    "    MOV R22, R17\n"
+                    "    ANDI R22, 0x7C\n"
+                    "    CPI R22, 0x7C\n"
+                    "    BRNE result_inf_a\n"
+                    "    ; Verificar se B é NaN\n"
+                    "    MOV R23, R17\n"
+                    "    ANDI R23, 0x03\n"
+                    "    OR R23, R16\n"
+                    "    BRNE result_nan\n"
+                    "    ; B também é infinito → NaN\n"
+                    "    RJMP result_nan\n\n");
+
+    fprintf(outAsm, "check_b_nan_inf:\n"
+                    "    ; Verificar se B é NaN ou infinito\n"
+                    "    MOV R22, R17\n"
+                    "    ANDI R22, 0x7C\n"
+                    "    CPI R22, 0x7C\n"
+                    "    BRNE check_a_zero\n"
+                    "\n"
+                    "    ; Expoente B = 0x1F\n"
+                    "    MOV R23, R17\n"
+                    "    ANDI R23, 0x03\n"
+                    "    OR R23, R16\n"
+                    "    BRNE result_nan    ; B é NaN\n"
+                    "    ; B é infinito → resultado = 0\n"
+                    "    CLR R22\n"
+                    "    CLR R23\n"
+                    "    OR R23, R30\n"
+                    "    RET\n\n");
+
+    fprintf(outAsm, "check_a_zero:\n"
+                    "    ; Verificar se A == 0\n"
+                    "    MOV R20, R19\n"
+                    "    ANDI R20, 0x7C\n"
+                    "    TST R20\n"
+                    "    BRNE check_b_zero\n"
+                    "    MOV R21, R19\n"
+                    "    ANDI R21, 0x03\n"
+                    "    OR R21, R18\n"
+                    "    BRNE check_b_zero\n"
+                    "    ; A é zero → resultado é zero\n"
+                    "    CLR R22\n"
+                    "    CLR R23\n"
+                    "    OR R23, R30\n"
+                    "    RET\n\n");
+
+    fprintf(outAsm, "check_b_zero:\n"
+                    "    ; Verificar se B == 0\n"
+                    "    MOV R22, R17\n"
+                    "    ANDI R22, 0x7C\n"
+                    "    TST R22\n"
+                    "    BRNE continue_division\n"
+                    "    MOV R23, R17\n"
+                    "    ANDI R23, 0x03\n"
+                    "    OR R23, R16\n"
+                    "    BRNE continue_division\n"
+                    "    ; B é zero → resultado é infinito\n"
+                    "result_inf:\n"
+                    "    CLR R22\n"
+                    "    LDI R23, 0x7C\n"
+                    "    OR R23, R30\n"
+                    "    RET\n\n");
+
+    fprintf(outAsm, "result_inf_a:\n"
+                    "    CLR R22\n"
+                    "    LDI R23, 0x7C\n"
+                    "    OR R23, R30\n"
+                    "    RET\n"
+                    "\n"
+                    "result_nan:\n"
+                    "    LDI R23, 0x7F       ; Expoente 0x1F e mantissa não zero\n"
+                    "    LDI R22, 0xFF\n"
+                    "    RET\n"
+                    "\n"
+                    "continue_division:\n\n");
+
+    fprintf(outAsm, "; === Extração de expoentes ===\n"
+                    "    ; Expoente A\n"
+                    "    MOV R20, R19\n"
+                    "    ANDI R20, 0x7C\n"
+                    "    LSR R20\n"
+                    "    LSR R20\n"
+                    "\n"
+                    "    ; Expoente B\n"
+                    "    MOV R21, R17\n"
+                    "    ANDI R21, 0x7C\n"
+                    "    LSR R21\n"
+                    "    LSR R21\n"
+                    "\n"
+                    "; === Extração de mantissas ===\n"
+                    "    ; Mantissa A em R25:R24\n"
+                    "    MOV R24, R18        ; byte baixo\n"
+                    "    MOV R25, R19        ; byte alto\n"
+                    "    ANDI R25, 0x03      ; isola bits da mantissa\n"
+                    "    CPI R20, 0\n"
+                    "    BREQ a_denormal\n"
+                    "    ORI R25, 0x04       ; adiciona bit implícito se normal\n"
+                    "    RJMP a_ready\n"
+                    "a_denormal:\n"
+                    "    ; Se denormal, expoente = 1 para cálculo posterior\n"
+                    "    LDI R20, 1\n"
+                    "a_ready:\n"
+                    "\n"
+                    "    ; Mantissa B em R27:R26\n"
+                    "    MOV R26, R16        ; byte baixo\n"
+                    "    MOV R27, R17        ; byte alto\n"
+                    "    ANDI R27, 0x03\n"
+                    "    CPI R21, 0\n"
+                    "    BREQ b_denormal\n"
+                    "    ORI R27, 0x04       ; bit implícito\n"
+                    "    RJMP b_ready\n"
+                    "b_denormal:\n"
+                    "    LDI R21, 1\n\n"
+                    "b_ready:\n");
+
+    fprintf(outAsm, "; === Cálculo do expoente do resultado ===\n"
+                    "    SUB R20, R21         ; R20 = A_exp - B_exp\n"
+                    "    ADI R20, 15          ; Bias (half-precision)");
+
+    fprintf(outAsm, "continue_division:\n"
+                    "    ; R25:R24 = Dividendo (A)\n"
+                    "    ; R27:R26 = Divisor   (B)\n"
+                    "    ; Resultado em R1:R0 (quociente)\n"
+                    "    CLR R1\n"
+                    "    CLR R0\n"
+                    "    CLR R2             ; R2:R3 será o registrador de trabalho para o dividendo\n"
+                    "    CLR R3\n"
+                    "    MOV R2, R25\n"
+                    "    MOV R3, R24\n"
+                    "    LDI R4, 16         ; 16 bits de divisão\n"
+                    "\n"
+                    "div_loop:\n"
+                    "    LSL R2\n"
+                    "    ROL R3\n"
+                    "    ROL R1\n"
+                    "    ROL R0\n"
+                    "\n"
+                    "    ; Subtrai divisor de R2:R3\n"
+                    "    MOV R5, R2\n"
+                    "    MOV R6, R3\n"
+                    "    SUB R5, R27\n"
+                    "    SBC R6, R26\n"
+                    "    BRCS skip_subtract   ; carry set → resultado negativo, não subtrai\n"
+                    "\n"
+                    "    ; Subtração válida → atualiza R2:R3 e define bit no quociente\n"
+                    "    MOV R2, R5\n"
+                    "    MOV R3, R6\n"
+                    "    ORI R0, 0x01         ; set bit menos significativo\n"
+                    "\n"
+                    "skip_subtract:\n"
+                    "    DEC R4\n"
+                    "    BRNE div_loop\n\n");
 }
 
 void op_integer_divide(FILE *outAsm) {
