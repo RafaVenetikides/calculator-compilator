@@ -22,30 +22,25 @@ void process_line(const char *line, FILE *outAsm) {
 }
 
 char* parse_expression(const char *line, int *pos, char *out) {
-    // out é a string onde vamos acumulando tokens em notação pós-fixa
     skip_spaces(line, pos);
 
-    // Esperamos encontrar '(' para iniciar a subexpressão
     if (line[*pos] != '(') {
-        return out; // não é subexpressão => nada a fazer
+        return out;
     }
-    (*pos)++; // pula '('
+    (*pos)++;
     skip_spaces(line, pos);
 
     // ---------- 1) Lê primeiro operando ----------
     if (line[*pos] == '(') {
-        // subexpressão aninhada, chama recursivo
         parse_expression(line, pos, out);
     } else {
-        // token simples (ex.: "7")
         int start = *pos;
-        while (line[*pos] && !isspace((unsigned char)line[*pos])
-               && line[*pos] != ')' && line[*pos] != '(') {
+        while (line[*pos] && (isdigit(line[*pos]) || line[*pos] == '.')) {
             (*pos)++;
-               }
+        }
         int length = *pos - start;
         strncat(out, line + start, length);
-        strcat(out, " "); // separador
+        strcat(out, " ");
     }
 
     skip_spaces(line, pos);
@@ -55,10 +50,9 @@ char* parse_expression(const char *line, int *pos, char *out) {
         parse_expression(line, pos, out);
     } else {
         int start = *pos;
-        while (line[*pos] && !isspace((unsigned char)line[*pos])
-               && line[*pos] != ')' && line[*pos] != '(') {
+        while (line[*pos] && (isdigit(line[*pos]) || line[*pos] == '.')) {
             (*pos)++;
-               }
+        }
         if (start < *pos) {
             int length = *pos - start;
             strncat(out, line + start, length);
