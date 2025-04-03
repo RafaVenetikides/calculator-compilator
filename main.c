@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include "include/file_utils.h"
 #include "include/expression_parser.h"
-#include "include/operations.h"
+#include "include/generate_assembly.h"
 #include "include/serial_operations.h"
 
 int main() {

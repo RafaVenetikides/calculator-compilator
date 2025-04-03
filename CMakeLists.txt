@@ -8,6 +8,20 @@ add_executable(Calculator
         src/expression_parser.c
         src/file_utils.c
         src/float_conversions.c
-        src/operations.c
+        src/generate_assembly.c
         src/stack_operations.c
-        src/serial_operations.c)
+        src/serial_operations.c
+        src/operations/add_operation.c
+        include/operations/add_operation.h
+        src/operations/subtract_operation.c
+        include/operations/subtract_operation.h
+        src/operations/multiply_operation.c
+        include/operations/multiply_operation.h
+        src/operations/div_operation.c
+        include/operations/div_operation.h
+        src/operations/div_int_operation.c
+        include/operations/div_int_operation.h
+        src/operations/rem_operation.c
+        include/operations/rem_operation.h
+        src/operations/power_operation.c
+        include/operations/power_operation.h)

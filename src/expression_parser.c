@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 
-#include "../include/operations.h"
+#include "../include/generate_assembly.h"
 
 void process_line(const char *line, FILE *outAsm) {
     char postfix[256] = "";
