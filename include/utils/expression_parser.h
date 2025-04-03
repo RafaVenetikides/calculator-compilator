@@ -5,6 +5,8 @@
 #ifndef EXPRESSION_PARSER_H
 #define EXPRESSION_PARSER_H
 
+#include <stdio.h>
+
 void process_line(const char *line, FILE *outAsm);
 char* parse_expression(const char *line, int *pos, char *out);
 static void skip_spaces(const char *line, int *pos);

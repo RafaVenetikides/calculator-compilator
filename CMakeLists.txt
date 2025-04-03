@@ -5,12 +5,12 @@ set(CMAKE_C_STANDARD 23)
 
 add_executable(Calculator
         main.c
-        src/expression_parser.c
-        src/file_utils.c
-        src/float_conversions.c
+        src/utils/expression_parser.c
+        src/utils/file_utils.c
+        src/utils/float_conversions.c
         src/generate_assembly.c
-        src/stack_operations.c
-        src/serial_operations.c
+        src/utils/stack_operations.c
+        src/utils/serial_operations.c
         src/operations/add_operation.c
         include/operations/add_operation.h
         src/operations/subtract_operation.c

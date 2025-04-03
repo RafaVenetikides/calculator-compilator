@@ -5,11 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "../include/expression_parser.h"
+#include "../../include/utils/expression_parser.h"
 
 #include <stdlib.h>
 
-#include "../include/generate_assembly.h"
+#include "../../include/generate_assembly.h"
 
 void process_line(const char *line, FILE *outAsm) {
     char postfix[256] = "";

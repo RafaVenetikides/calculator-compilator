@@ -2,7 +2,7 @@
 // Created by Rafael Venetikides on 27/03/25.
 //
 
-#include "../include/serial_operations.h"
+#include "../../include/utils/serial_operations.h"
 
 void serial_functions(FILE *outAsm) {
     fprintf(outAsm, "program_start:\n\n");

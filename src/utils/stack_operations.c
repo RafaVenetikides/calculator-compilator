@@ -2,8 +2,8 @@
 // Created by Rafael Venetikides on 25/03/25.
 //
 
-#include "../include/float_conversions.h"
-#include "../include/stack_operations.h"
+#include "../../include/utils/float_conversions.h"
+#include "../../include/utils/stack_operations.h"
 
 /**
  * @brief Pushes a 16-bit value to the hardware stack

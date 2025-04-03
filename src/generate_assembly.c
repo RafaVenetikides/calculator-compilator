@@ -7,10 +7,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-#include "../include/stack_operations.h"
+#include "../include/utils/stack_operations.h"
 #include "../include/generate_assembly.h"
 
-#include "../include/serial_operations.h"
+#include "../include/utils/serial_operations.h"
 
 /**
  * @brief Generates assembly code from a postfix expression

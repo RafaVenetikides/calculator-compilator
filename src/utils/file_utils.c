@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/file_utils.h"
+#include "../../include/utils/file_utils.h"
 
 void read_lines(char ***linesPtr, size_t *countPtr, FILE *fptr) {
     char buffer[256];
