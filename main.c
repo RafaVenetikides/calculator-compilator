@@ -5,10 +5,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "include/file_utils.h"
-#include "include/expression_parser.h"
+#include "include/utils/file_utils.h"
+#include "include/utils/expression_parser.h"
 #include "include/generate_assembly.h"
-#include "include/serial_operations.h"
+#include "include/utils/serial_operations.h"
 
 int main() {
     FILE *fptr = fopen("file_2.txt", "r");

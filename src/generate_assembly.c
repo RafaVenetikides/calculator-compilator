@@ -89,11 +89,11 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                                    "   PUSH R23\n\n");
                 break;
                 case '/':
-                    fprintf(outAsm, "    POP R17\n"
-                                    "    POP R16\n\n"
+                    fprintf(outAsm, "    POP R19\n"
+                                    "    POP R18\n\n"
                                     "    ; Pop B\n"
-                                    "    POP R19\n"
-                                    "    POP R18\n\n");
+                                    "    POP R17\n"
+                                    "    POP R16\n\n");
 
                     fprintf(outAsm, "   CALL op_div_int_16bits\n\n");
 
@@ -101,11 +101,11 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                                    "   PUSH R23\n\n");
                 break;
                 case '%':
-                    fprintf(outAsm, "    POP R17\n"
-                                    "    POP R16\n\n"
+                    fprintf(outAsm, "    POP R19\n"
+                                    "    POP R18\n\n"
                                     "    ; Pop B \n"
-                                    "    POP R19\n"
-                                    "    POP R18\n\n");
+                                    "    POP R17\n"
+                                    "    POP R16\n\n");
 
                     fprintf(outAsm, "   CALL op_rem_16bits\n\n");
 
@@ -157,6 +157,7 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
     }
     fprintf(outAsm, "   POP R23\n"
                     "   POP R22\n\n");
+    fprintf(outAsm, "   CALL print_float_decimal\n");
     fprintf(outAsm, "   CALL print\n\n");
 }
 
@@ -170,6 +171,7 @@ void write_functions(FILE *outAsm) {
     op_rem_16bits(outAsm);
     op_power(outAsm);
     serial_out(outAsm);
+    serial_out_decimal(outAsm);
 }
 
 /**

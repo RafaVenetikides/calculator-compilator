@@ -9,5 +9,6 @@
 
 void serial_functions(FILE *outAsm);
 void serial_out(FILE *outAsm);
+void serial_out_decimal(FILE *outAsm);
 
 #endif //SERIAL_OPERATIONS_H
