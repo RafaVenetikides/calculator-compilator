@@ -116,12 +116,8 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                     fprintf(outAsm, "    POP R17\n"
                                     "    POP R16\n\n");
 
-                    fprintf(outAsm, ";  Moving values from op 1\n"
-                                    "    MOV R19, R17\n"
-                                    "    MOV R18, R16\n\n");
-
-                    fprintf(outAsm, "    POP R17\n"
-                                    "    POP R16\n\n");
+                    fprintf(outAsm, "    POP R19\n"
+                                    "    POP R18\n\n");
 
                     fprintf(outAsm, "   CALL op_pow_16bits\n\n");
 

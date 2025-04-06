@@ -7,6 +7,12 @@
 
 void op_mult_16bits(FILE *outAsm) {
     fprintf(outAsm, "op_mult_16bits:\n"
+                    "   PUSH R21\n"
+                    "   PUSH R20\n"
+                    "   PUSH R19\n"
+                    "   PUSH R18\n"
+                    "   PUSH R17\n"
+                    "   PUSH R16\n"
                     "   ; --- Extrair sinais ---\n"
                     "   MOV R30, R19\n"
                     "   ANDI R30, 0x80\n"
@@ -164,17 +170,23 @@ void op_mult_16bits(FILE *outAsm) {
                     "   LSR R24\n"
                     "   LSR R24\n"
                     "   OR R22, R24\n"
-                    "   RET\n\n"
-
+                    "   RJMP mult_return\n\n"
                     "exp_overflow:\n"
                     "   CLR R22\n"
                     "   LDI R23, 0x7C\n"
                     "   OR R23, R30\n"
-                    "   RET\n\n"
-
+                    "   RJMP mult_return\n\n"
                     "exp_underflow:\n"
                     "   CLR R22\n"
                     "   CLR R23\n"
                     "   OR R23, R30\n"
+                    "\n"
+                    "mult_return:\n"
+                    "   POP R16\n"
+                    "   POP R17\n"
+                    "   POP R18\n"
+                    "   POP R19\n"
+                    "   POP R20\n"
+                    "   POP R21\n"
                     "   RET\n\n");
 }
