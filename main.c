@@ -32,6 +32,8 @@ int main() {
 
     fprintf(outAsm, "#include \"m328Pdef.inc\"\n\n");
 
+    memory_config(outAsm);
+
     write_functions(outAsm);
 
     serial_functions(outAsm);

@@ -17,5 +17,6 @@
 void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm);
 void write_functions(FILE *outAsm);
 void align_exp(FILE *outAsm);
+void memory_config(FILE *outAsm);
 
 #endif //OPERATIONS_H

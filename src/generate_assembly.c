@@ -21,16 +21,43 @@
 void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
 
     const char *p = postfix;
-
+    int stack_count = 0;
     while (*p) {
         while (isspace((unsigned char)*p)) {
             p++;
         }
         if (!*p) break;
 
-        if (strchr("+-*/|%^", *p)) {
+        if (strncmp(p, "MEM", 3) == 0) {
+            p += 3; // Avança o ponteiro após "MEM"
+            // Se há um operando na pilha, o operador atua no modo STORE
+            if (stack_count > 0) {
+                // Modo STORE: armazena o valor do topo da pilha em MEM.
+                gen_pop_16bit(outAsm);  // Gera o código para desempilhar o valor (4 bytes)
+                fprintf(outAsm,
+                    "; Armazenando valor em MEM\n"
+                    "    MOV MEM_LO, R16    ; baixa parte do half float\n"
+                    "    MOV MEM_HI, R17    ; alta parte do half float\n"
+                    "    MOV MEM_EXP, R18   ; expoente\n"
+                    "    MOV MEM_SIGN, R19  ; sinal\n\n"
+                );
+                stack_count--; // Remove o operando que foi armazenado
+            } else {
+                // Modo RECOVER: recupera o valor armazenado em MEM e empurra na pilha.
+                fprintf(outAsm,
+                    "; Recuperando valor armazenado em MEM (formato 16 bits)\n"
+                    "    LDS R22, MEM_LO    ; baixa parte do half float\n"
+                    "    LDS R23, MEM_HI    ; alta parte do half float\n\n"
+                    "    PUSH R22           ; empurra baixa parte\n"
+                    "    PUSH R23           ; empurra alta parte\n\n"
+            );
+
+                stack_count++; // Agora a pilha recebe esse valor
+            }
+        } else if (strchr("+-*/|%^", *p)) {
             char op = *p;
             p++;
+            stack_count--;
 
             switch (op) {
                 case '+':
@@ -149,6 +176,7 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
 
             // Agora geramos as instruções de push de 16 bits
             gen_push_16bit(valFloat, outAsm);
+            stack_count++;
         }
     }
     fprintf(outAsm, "   POP R23\n"
@@ -245,4 +273,30 @@ void align_exp(FILE *outAsm) {
                     "    RJMP shift_b\n"
                     "end_shift_b:\n\n"
                     "aligned:\n");
+}
+
+void memory_config(FILE *outAsm) {
+    fprintf(outAsm, ";--------------------------------------------------\n"
+                    "; Seção de Dados (.dseg) - aloca os bytes na SRAM\n"
+                    ";--------------------------------------------------\n"
+                    "        .dseg\n"
+                    "MEM_LO:    .byte 1       ; Armazena o byte baixo do half float\n"
+                    "MEM_HI:    .byte 1       ; Armazena o byte alto do half float\n"
+                    "MEM_EXP:   .byte 1       ; Armazena o expoente\n"
+                    "MEM_SIGN:  .byte 1       ; Armazena o sinal\n"
+                    "\n"
+                    ";--------------------------------------------------\n"
+                    "; Seção de Código (.cseg)\n"
+                    ";--------------------------------------------------\n"
+                    "        .cseg\n"
+                    "        .org 0x0000\n"
+                    "        rjmp init       ; Pula para a rotina de inicialização\n"
+                    "\n"
+                    "init:\n"
+                    "        ; Inicializa os bytes de memória usados para MEM com zero\n"
+                    "        ldi   r16, 0          ; R16 recebe zero\n"
+                    "        sts   MEM_LO, r16     ; Limpa MEM_LO (byte baixo)\n"
+                    "        sts   MEM_HI, r16     ; Limpa MEM_HI (byte alto)\n"
+                    "        sts   MEM_EXP, r16    ; Limpa MEM_EXP (expoente)\n"
+                    "        sts   MEM_SIGN, r16   ; Limpa MEM_SIGN (sinal)\n\n");
 }

@@ -28,20 +28,12 @@ char* parse_expression(const char *line, int *pos, char *out) {
         return out;
     }
     (*pos)++;
-    skip_spaces(line, pos);
 
     // ---------- 1) Lê primeiro operando ----------
-    if (line[*pos] == '(') {
-        parse_expression(line, pos, out);
-    } else {
-        int start = *pos;
-        while (line[*pos] && (isdigit(line[*pos]) || line[*pos] == '.')) {
-            (*pos)++;
-        }
-        int length = *pos - start;
-        strncat(out, line + start, length);
-        strcat(out, " ");
-    }
+    parse_operand(line, pos, out);
+
+    // Lê segundo operando
+    parse_operand(line, pos, out);
 
     skip_spaces(line, pos);
 
@@ -84,4 +76,37 @@ char* parse_expression(const char *line, int *pos, char *out) {
 
 static void skip_spaces(const char *line, int *pos) {
     while (isspace(line[*pos])) (*pos)++;
+}
+
+void parse_operand(const char *line, int *pos, char *out) {
+    skip_spaces(line, pos);
+
+    // Se for subexpressão
+    if (line[*pos] == '(') {
+        parse_expression(line, pos, out);
+        return;
+    }
+
+    // Se for "MEM"
+    if (strncmp(&line[*pos], "MEM", 3) == 0) {
+        // Copia "MEM" para out
+        strncat(out, "MEM", 3);
+        strcat(out, " ");
+        // Avança pos
+        (*pos) += 3;
+        // Retorna
+        return;
+    }
+
+    // Se for um número
+    if (isdigit(line[*pos]) || line[*pos] == '.') {
+        int start = *pos;
+        while (isdigit(line[*pos]) || line[*pos] == '.') {
+            (*pos)++;
+        }
+        int length = *pos - start;
+        strncat(out, line + start, length);
+        strcat(out, " ");
+        return;
+    }
 }

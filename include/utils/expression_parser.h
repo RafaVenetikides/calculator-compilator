@@ -11,5 +11,6 @@ void process_line(const char *line, FILE *outAsm);
 char* parse_expression(const char *line, int *pos, char *out);
 static void skip_spaces(const char *line, int *pos);
 void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm);
+void parse_operand(const char *line, int *pos, char *out);
 
 #endif //EXPRESSION_PARSER_H
