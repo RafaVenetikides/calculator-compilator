@@ -36,10 +36,10 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                 gen_pop_16bit(outAsm);  // Gera o código para desempilhar o valor (4 bytes)
                 fprintf(outAsm,
                     "; Armazenando valor em MEM\n"
-                    "    MOV MEM_LO, R16    ; baixa parte do half float\n"
-                    "    MOV MEM_HI, R17    ; alta parte do half float\n"
-                    "    MOV MEM_EXP, R18   ; expoente\n"
-                    "    MOV MEM_SIGN, R19  ; sinal\n\n"
+                    "    STS MEM_LO, R16    ; baixa parte do half float\n"
+                    "    STS MEM_HI, R17    ; alta parte do half float\n\n"
+                    "    PUSH R16\n"
+                    "    PUSH R17\n\n"
                 );
                 stack_count--; // Remove o operando que foi armazenado
             } else {
