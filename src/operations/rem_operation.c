@@ -7,7 +7,7 @@
 void op_rem_16bits(FILE *outAsm) {
     fprintf(outAsm, "op_rem_16bits:\n"
                     "    ; Entrada: A em R19:R18, B em R17:R16\n"
-                    "    ; Saída: Resto (A % B) em R23:R22\n"
+                    "    ; Saída: Resto (A %% B) em R23:R22\n"
                     "\n"
                     "rem_loop:\n"
                     "    ; Verifica se A (R19:R18) >= B (R17:R16)\n"

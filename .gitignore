@@ -8,3 +8,8 @@ cmake-build-*/
 # Compiled binaries
 *.exe
 *.o
+
+# Output files
+*.asm
+*.hex
+*.obj

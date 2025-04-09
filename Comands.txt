@@ -1,0 +1,14 @@
+Compile:
+gcc main.c src/operations/*.c src/utils/*.c src/*.c -o output/main
+
+Run executable:
+output/main file_<File number>.txt
+
+Assemble:
+avra assembly_output.asm
+
+Upload to Arduino:
+avrdude -v -patmega328p -carduino -P /dev/tty.usbmodem<Port number> -b115200 -D -Uflash:w:assembly_output.hex:i
+
+Open serial monitor:
+screen /dev/tty.usbmodem<Port number> 9600

@@ -30,7 +30,6 @@ uint16_t float2half_rn (float a) {
                 ia = ia << (32 - (24 - 11));
                 ir = ir + ((14 + shift) << 10);
             }
-            /* IEEE-754 round to nearest of even */
             if ((ia > 0x80000000) || ((ia == 0x80000000) && (ir & 1))) {
                 ir++;
             }

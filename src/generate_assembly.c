@@ -27,13 +27,12 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
             p++;
         }
         if (!*p) break;
-
+            // MEM encontrado
         if (strncmp(p, "MEM", 3) == 0) {
-            p += 3; // Avança o ponteiro após "MEM"
-            // Se há um operando na pilha, o operador atua no modo STORE
+            p += 3;
+
             if (stack_count > 0) {
-                // Modo STORE: armazena o valor do topo da pilha em MEM.
-                gen_pop_16bit(outAsm);  // Gera o código para desempilhar o valor (4 bytes)
+                gen_pop_16bit(outAsm);
                 fprintf(outAsm,
                     "; Armazenando valor em MEM\n"
                     "    STS MEM_LO, R16    ; baixa parte do half float\n"
@@ -41,9 +40,8 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                     "    PUSH R16\n"
                     "    PUSH R17\n\n"
                 );
-                stack_count--; // Remove o operando que foi armazenado
+                stack_count--;
             } else {
-                // Modo RECOVER: recupera o valor armazenado em MEM e empurra na pilha.
                 fprintf(outAsm,
                     "; Recuperando valor armazenado em MEM (formato 16 bits)\n"
                     "    LDS R22, MEM_LO    ; baixa parte do half float\n"
@@ -52,8 +50,9 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                     "    PUSH R23           ; empurra alta parte\n\n"
             );
 
-                stack_count++; // Agora a pilha recebe esse valor
+                stack_count++;
             }
+            // Operador matemático
         } else if (strchr("+-*/|%^", *p)) {
             char op = *p;
             p++;
@@ -157,11 +156,9 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                 break;
             }
         } else {
-            // É um número, então vamos ler até espaço ou operador
             char temp[64];
             int i = 0;
 
-            // Copia os caracteres do número para temp[]
             while (*p
                 && !isspace((unsigned char)*p)
                 && !strchr("+-*/|%^", *p))
@@ -169,12 +166,10 @@ void generateAssemblyFromPostfix(const char *postfix, FILE *outAsm) {
                 temp[i++] = *p;
                 p++;
             }
-            temp[i] = '\0'; // fim de string
+            temp[i] = '\0';
 
-            // Convertemos para int (ou outra função se precisar half-precision etc.)
             float valFloat = strtof(temp, NULL);
 
-            // Agora geramos as instruções de push de 16 bits
             gen_push_16bit(valFloat, outAsm);
             stack_count++;
         }

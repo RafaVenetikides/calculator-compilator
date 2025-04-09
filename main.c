@@ -10,14 +10,14 @@
 #include "include/generate_assembly.h"
 #include "include/utils/serial_operations.h"
 
-int main() {
-    FILE *fptr = fopen("file_2.txt", "r");
+int main(int argc, char* argv[]) {
+    FILE *fptr = fopen(argv[1], "r");
     if (!fptr) {
         perror("Erro ao abrir o arquivo");
         return 1;
     }
 
-    FILE *outAsm = fopen("assembly_output.asm", "w");
+    FILE *outAsm = fopen("output/assembly_output.asm", "w");
     if (!outAsm) {
         perror("Erro ao criar arquivo de saída");
         fclose(fptr);
